@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Demo do Motor de Áudio - Web Audio API</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --border: #334155;
+      --success: #4ade80;
+      --danger: #f87171;
+    }
+
+    body {
+      margin: 0;
+      padding: 2rem;
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .container {
+      max-width: 640px;
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 1rem;
+      padding: 2rem;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    }
+
+    h1 {
+      margin-top: 0;
+      font-size: 1.5rem;
+      color: var(--accent);
+    }
+
+    .info-badge {
+      background: #0369a122;
+      border: 1px solid #0284c7;
+      color: #7dd3fc;
+      padding: 0.75rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      margin-bottom: 1.5rem;
+      line-height: 1.4;
+    }
+
+    .status-panel {
+      background: #0f172a;
+      border: 1px solid var(--border);
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin: 1.5rem 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .status-indicator {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+    }
+
+    .dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--muted);
+      transition: background 0.2s;
+    }
+
+    .dot.active {
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+    }
+
+    .step-display {
+      font-size: 0.9rem;
+      color: var(--muted);
+    }
+
+    .step-display span {
+      color: var(--accent);
+      font-weight: bold;
+      font-size: 1.1rem;
+    }
+
+    .btn-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .actions-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 0.75rem;
+    }
+
+    button {
+      background: #334155;
+      color: var(--text);
+      border: 1px solid var(--border);
+      padding: 0.85rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+
+    button:hover {
+      background: #475569;
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button.primary {
+      background: #0284c7;
+      border-color: #0369a1;
+    }
+
+    button.primary:hover {
+      background: #0369a1;
+    }
+
+    button.danger {
+      background: #991b1b;
+      border-color: #7f1d1d;
+    }
+
+    button.danger:hover {
+      background: #b91c1c;
+    }
+
+    .timeline {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 1rem;
+      justify-content: center;
+    }
+
+    .step-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 0.375rem;
+      background: #0f172a;
+      border: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: var(--muted);
+      transition: all 0.15s ease;
+    }
+
+    .step-box.active {
+      background: #0284c7;
+      color: white;
+      border-color: var(--accent);
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.6);
+      transform: scale(1.08);
+    }
+
+    .cleanup-tip {
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      color: var(--muted);
+      border-top: 1px solid var(--border);
+      padding-top: 1rem;
+    }
+
+    code {
+      background: #0f172a;
+      padding: 0.2rem 0.4rem;
+      border-radius: 0.25rem;
+      color: #f472b6;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Motor de Áudio Web Audio API (Demo)</h1>
+    <div class="info-badge">
+      Esta é uma página de teste manual de som e sincronização. O áudio é sintetizado 100% nativamente em tempo real sem arquivos externos.
+    </div>
+
+    <label style="font-size: 0.85rem; color: var(--muted); text-transform: uppercase; font-weight: 600;">Sons Individuais</label>
+    <div class="btn-grid" style="margin-top: 0.5rem;">
+      <button id="btn-kick">Kick (Bumbo)</button>
+      <button id="btn-snare">Snare (Caixa)</button>
+      <button id="btn-hihat">Hi-Hat (Chimbal)</button>
+    </div>
+
+    <label style="font-size: 0.85rem; color: var(--muted); text-transform: uppercase; font-weight: 600;">Sequências Rítmicas</label>
+    <div class="actions-grid" style="margin-top: 0.5rem;">
+      <button id="btn-challenge" class="primary">Tocar Desafio (Kick - Duas Batidas)</button>
+      <button id="btn-stop" class="danger">Parar (Stop)</button>
+    </div>
+
+    <div class="status-panel">
+      <div class="status-indicator">
+        <div id="dot" class="dot"></div>
+        <span id="status-text">Pronto</span>
+      </div>
+      <div class="step-display">
+        Passo ativo: <span id="current-step">-</span>
+      </div>
+    </div>
+
+    <div class="timeline" id="timeline">
+      <div class="step-box" data-step="0">0</div>
+      <div class="step-box" data-step="1">1</div>
+      <div class="step-box" data-step="2">2</div>
+      <div class="step-box" data-step="3">3</div>
+    </div>
+
+    <div class="cleanup-tip">
+      Para remover esta página de teste quando terminar: <code>rm src/audio/engine.demo.html</code>
+    </div>
+  </div>
+
+  <script type="module">
+    import { AudioEngine, BPM, STEP_SECONDS, synthesizeKick, synthesizeSnare, synthesizeHihat } from './engine.ts';
+
+    const engine = new AudioEngine();
+
+    const dot = document.getElementById('dot');
+    const statusText = document.getElementById('status-text');
+    const currentStep = document.getElementById('current-step');
+    const stepBoxes = document.querySelectorAll('.step-box');
+
+    function resetStepBoxes() {
+      stepBoxes.forEach(b => b.classList.remove('active'));
+    }
+
+    function setPlayingUI(playing, message = '') {
+      if (playing) {
+        dot.classList.add('active');
+        statusText.textContent = message || 'Reproduzindo...';
+      } else {
+        dot.classList.remove('active');
+        statusText.textContent = message || 'Parado';
+        currentStep.textContent = '-';
+        resetStepBoxes();
+      }
+    }
+
+    // Testes de instrumentos avulsos
+    document.getElementById('btn-kick').addEventListener('click', () => {
+      engine.play([{ stepIndex: 0, type: 'play', instrument: 'kick', line: 1 }]);
+    });
+
+    document.getElementById('btn-snare').addEventListener('click', () => {
+      engine.play([{ stepIndex: 0, type: 'play', instrument: 'snare', line: 1 }]);
+    });
+
+    document.getElementById('btn-hihat').addEventListener('click', () => {
+      engine.play([{ stepIndex: 0, type: 'play', instrument: 'hihat', line: 1 }]);
+    });
+
+    // Teste do desafio: INSTRUMENT kick -> PLAY (0) -> WAIT (1) -> PLAY (2)
+    document.getElementById('btn-challenge').addEventListener('click', async () => {
+      const events = [
+        { stepIndex: 0, type: 'play', instrument: 'kick', line: 2 },
+        { stepIndex: 1, type: 'wait', line: 3 },
+        { stepIndex: 2, type: 'play', instrument: 'kick', line: 4 }
+      ];
+
+      setPlayingUI(true, 'Reproduzindo sequência...');
+
+      await engine.play(events, {
+        onStep: (step) => {
+          currentStep.textContent = step;
+          resetStepBoxes();
+          const activeBox = document.querySelector(`.step-box[data-step="${step}"]`);
+          if (activeBox) activeBox.classList.add('active');
+        },
+        onEnd: () => {
+          setPlayingUI(false, 'Concluído (onEnd)');
+        }
+      });
+    });
+
+    // Botão Parar
+    document.getElementById('btn-stop').addEventListener('click', () => {
+      engine.stop();
+      setPlayingUI(false, 'Interrompido');
+    });
+  </script>
+</body>
+</html>
