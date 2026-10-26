@@ -8,19 +8,25 @@ O **CodeStar** é uma aplicação gamificada voltada ao aprendizado de lógica d
 
 ## Tecnologias
 
-* **Linguagem & Runtime:** JavaScript / TypeScript, Node.js e npm
-* **Frontend:** React (Vite)
-* **Processamento de Áudio:** Web Audio API (prevista para execução sonora)
+* **Framework Web:** [Next.js](https://nextjs.org/) (App Router, React 19)
+* **Estilização:** [Tailwind CSS v4](https://tailwindcss.com/) e CSS customizado com design tokens
+* **Linguagem & Runtime:** TypeScript / JavaScript, Node.js e npm
+* **Processamento de Áudio:** Web Audio API nativa (síntese sonora em tempo real sem arquivos externos)
 * **Linguagem de Domínio Específico (DSL):** Lexer, Parser e Interpretador customizados em TypeScript
+* **Controle de Qualidade:** ESLint, TypeScript Type Checking e testes automatizados com TSX
 * **Controle de Versão:** Git e GitHub
 
 ---
 
 ## Status do Projeto
 
-✅ **DSL & Interpretador Concluídos:** Definição da sintaxe, analisador léxico (Lexer), analisador sintático (Parser) e interpretador semântico (Interpreter) totalmente implementados e testados.
+✅ **DSL & Interpretador Concluídos:** Analisador léxico (Lexer), analisador sintático (Parser) e interpretador semântico (Interpreter) totalmente implementados e testados.
 
-⏳ **Próxima Fase:** Integração do interpretador com a Web Audio API e construção da interface visual no React.
+✅ **Motor de Áudio Concluído:** Síntese nativa de bateria acústica (Kick, Snare, Hi-hat) via Web Audio API com agendamento de alta precisão em `AudioContext.currentTime`.
+
+✅ **Validador de Desafios Concluído:** Sistema de metas rítmicas com verificação automática (`checkChallenge`) e suíte de testes.
+
+✅ **Interface MVP & Migração Next.js Concluídas:** Aplicação migrada para Next.js (App Router) com Tailwind CSS v4, layout split-screen responsivo com tema escuro, editor com numeração sincronizada, visualizador rítmico dinâmico e feedback acessível.
 
 ---
 
@@ -66,21 +72,46 @@ O código DSL em texto passa por três etapas principais até a geração de eve
 
 ---
 
-## Execução Local e Testes da DSL
+## Execução Local e Scripts
 
-### Instalação das Dependências
+### 1. Instalação das Dependências
 
 ```bash
 npm install
 ```
 
-### Execução do Servidor de Desenvolvimento (React + Vite)
+### 2. Servidor de Desenvolvimento (Next.js)
 
 ```bash
 npm run dev
 ```
 
-### Como Testar a DSL
+Acesse [http://localhost:3000](http://localhost:3000) no seu navegador.
+
+### 3. Build de Produção e Execução
+
+```bash
+npm run build
+npm run start
+```
+
+### 4. Verificação de Código e Qualidade (Lint & Tipos)
+
+```bash
+npm run lint
+npx tsc --noEmit
+```
+
+### 5. Execução dos Testes Automatizados
+
+* **Testes da DSL:**
+  ```bash
+  npm test
+  ```
+* **Testes do Desafio MVP:**
+  ```bash
+  npm run test:challenge
+  ```
 
 A suíte de testes automatizados valida o funcionamento do Lexer, Parser, Interpretador e tratamento de erros sintáticos/semânticos.
 

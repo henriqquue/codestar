@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* Reset moderno e variáveis globais do CodeStar */
 :root {
   --bg-main: #0a0e1a;

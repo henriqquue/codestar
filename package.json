@@ -4,27 +4,31 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
     "lint": "eslint .",
-    "preview": "vite preview",
-    "test": "npx tsx src/dsl/__tests__/dsl.test.ts"
+    "test": "npx tsx src/dsl/__tests__/dsl.test.ts",
+    "test:challenge": "npx tsx src/challenge/challenge.check.ts"
   },
   "dependencies": {
+    "@tailwindcss/postcss": "^4.3.3",
+    "eslint-config-next": "^16.4.3",
+    "next": "^16.4.3",
+    "postcss": "^8.5.31",
     "react": "^19.2.8",
-    "react-dom": "^19.2.8"
+    "react-dom": "^19.2.8",
+    "tailwindcss": "^4.3.3"
   },
   "devDependencies": {
-    "@eslint/js": "^10.0.1",
+    "@eslint/eslintrc": "^3.3.7",
     "@types/node": "^26.6.5",
     "@types/react": "^19.2.18",
     "@types/react-dom": "^19.2.7",
-    "@vitejs/plugin-react": "^6.1.1",
-    "eslint": "^10.10.0",
+    "@typescript-eslint/parser": "^8.72.0",
+    "eslint": "^9.21.0",
     "eslint-plugin-react-hooks": "^7.1.1",
-    "eslint-plugin-react-refresh": "^0.5.6",
     "globals": "^17.12.0",
-    "typescript": "^7.0.2",
-    "vite": "^8.3.0"
+    "typescript": "^5.8.2"
   }
 }

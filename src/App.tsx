@@ -1,3 +1,5 @@
+'use client';
+
 import React, { useReducer, useEffect, useRef, useCallback } from 'react';
 import { MVP_CHALLENGE, checkChallenge, ChallengeCheckResult } from './challenge/challenge';
 import { compileCode, CompilationResult } from './dsl';
