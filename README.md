@@ -4,6 +4,8 @@
 
 O **CodeStar** é uma aplicação gamificada voltada ao aprendizado de lógica de programação por meio da criação e execução de ritmos musicais. Através de uma linguagem de domínio específico (DSL) simples e intuitiva, alunos e iniciantes em programação podem compor sequências rítmicas, aprender estruturas de controle (como loops de repetição) e visualizar/ouvir o resultado de seus códigos em tempo real.
 
+URL oficial: https://codestar-chi.vercel.app/
+
 ---
 
 ## Tecnologias
