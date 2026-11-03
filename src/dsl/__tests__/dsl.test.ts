@@ -1,20 +1,30 @@
 import { compileCode } from '../index';
 
-function runTests() {
-  console.log('=== Teste 1: Ritmo simples ===');
-  const code1 = `
+describe('DSL - Casos de compilação iniciais', () => {
+  it('compila um ritmo simples com kick, wait e kick gerando 3 passos sem erros', () => {
+    // Preparar
+    const code = `
 INSTRUMENT kick
 PLAY
 WAIT
 PLAY
-  `;
-  const result1 = compileCode(code1);
-  console.log('Erros:', result1.errors);
-  console.log('Total de passos:', result1.totalSteps);
-  console.log('Eventos:', JSON.stringify(result1.events, null, 2));
+    `;
 
-  console.log('\n=== Teste 2: Repetição (REPEAT 2 ... END) ===');
-  const code2 = `
+    // Agir
+    const result = compileCode(code);
+
+    // Conferir
+    expect(result.errors).toHaveLength(0);
+    expect(result.totalSteps).toBe(3);
+    expect(result.events).toHaveLength(3);
+    expect(result.events[0]).toMatchObject({ type: 'play', instrument: 'kick', stepIndex: 0 });
+    expect(result.events[1]).toMatchObject({ type: 'wait', stepIndex: 1 });
+    expect(result.events[2]).toMatchObject({ type: 'play', instrument: 'kick', stepIndex: 2 });
+  });
+
+  it('compila REPEAT 2 alternando kick e snare gerando 6 passos sem erros', () => {
+    // Preparar
+    const code = `
 REPEAT 2
   INSTRUMENT kick
   PLAY
@@ -22,34 +32,59 @@ REPEAT 2
   PLAY
   WAIT
 END
-  `;
-  const result2 = compileCode(code2);
-  console.log('Erros:', result2.errors);
-  console.log('Total de passos:', result2.totalSteps);
+    `;
 
-  console.log('\n=== Teste 3: Tratamento de Erro - Letras minúsculas ===');
-  const code3 = `
+    // Agir
+    const result = compileCode(code);
+
+    // Conferir
+    expect(result.errors).toHaveLength(0);
+    expect(result.totalSteps).toBe(6);
+    expect(result.events).toHaveLength(6);
+  });
+
+  it('detecta erro de iniciante ao escrever comandos com letras minúsculas', () => {
+    // Preparar
+    const code = `
 instrument kick
 play
-  `;
-  const result3 = compileCode(code3);
-  console.log('Erros esperados:', result3.errors);
+    `;
 
-  console.log('\n=== Teste 4: Tratamento de Erro - PLAY sem instrumento ===');
-  const code4 = `
+    // Agir
+    const result = compileCode(code);
+
+    // Conferir
+    expect(result.errors.length).toBeGreaterThan(0);
+    expect(result.errors[0].message).toContain('letras maiúsculas');
+  });
+
+  it('detecta erro de iniciante ao esquecer de selecionar um instrumento antes de PLAY', () => {
+    // Preparar
+    const code = `
 PLAY
-  `;
-  const result4 = compileCode(code4);
-  console.log('Erros esperados:', result4.errors);
+    `;
 
-  console.log('\n=== Teste 5: Tratamento de Erro - REPEAT sem END ===');
-  const code5 = `
+    // Agir
+    const result = compileCode(code);
+
+    // Conferir
+    expect(result.errors.length).toBeGreaterThan(0);
+    expect(result.errors[0].message).toContain('exige que um instrumento seja selecionado');
+  });
+
+  it('detecta erro de iniciante ao esquecer o END de um REPEAT', () => {
+    // Preparar
+    const code = `
 REPEAT 3
   INSTRUMENT hihat
   PLAY
-  `;
-  const result5 = compileCode(code5);
-  console.log('Erros esperados:', result5.errors);
-}
+    `;
 
-runTests();
+    // Agir
+    const result = compileCode(code);
+
+    // Conferir
+    expect(result.errors.length).toBeGreaterThan(0);
+    expect(result.errors[0].message).toContain("não foi encerrado com 'END'");
+  });
+});
