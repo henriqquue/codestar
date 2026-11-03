@@ -209,4 +209,37 @@ END
     expect(result.errors.length).toBeGreaterThan(0);
     expect(result.ast).toBeNull();
   });
+
+  it('reporta erro de instrução inesperada quando um número ou token avulso aparece no início da instrução', () => {
+    // Preparar
+    const source = `
+123
+PLAY
+    `;
+
+    // Agir
+    const result = parseSource(source);
+
+    // Conferir
+    expect(result.errors.length).toBeGreaterThan(0);
+    expect(result.errors[0].message).toContain('Instrução inválida ou inesperada');
+    expect(result.ast).toBeNull();
+  });
+
+  it('recupera a sincronização quando ocorre erro de instrução dentro de um bloco REPEAT', () => {
+    // Preparar
+    const source = `
+REPEAT 2
+  INSTRUMENT kick FOOBAR PLAY
+  PLAY
+END
+    `;
+
+    // Agir
+    const result = parseSource(source);
+
+    // Conferir
+    expect(result.errors.length).toBeGreaterThan(0);
+    expect(result.ast).toBeNull();
+  });
 });

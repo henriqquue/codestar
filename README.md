@@ -4,6 +4,8 @@
 
 O **CodeStar** é uma aplicação gamificada voltada ao aprendizado de lógica de programação por meio da criação e execução de ritmos musicais. Através de uma linguagem de domínio específico (DSL) simples e intuitiva, alunos e iniciantes em programação podem compor sequências rítmicas, aprender estruturas de controle (como loops de repetição) e visualizar/ouvir o resultado de seus códigos em tempo real.
 
+* **Aplicação em Produção:** [https://codestar-chi.vercel.app](https://codestar-chi.vercel.app)
+
 ---
 
 ## Tecnologias
@@ -104,32 +106,36 @@ npx tsc --noEmit
 
 ### 5. Execução dos Testes Automatizados
 
-* **Testes da DSL:**
+O projeto utiliza **Jest** com o adaptador oficial `next/jest`, `@testing-library/react` e simulação de Web Audio API para validar a pipeline da DSL, lógica do desafio, máquina de estados do redutor e síntese sonoro-temporal.
+
+* **Executar todos os testes:**
   ```bash
   npm test
   ```
-* **Testes do Desafio MVP:**
+* **Executar testes em modo contínuo (watch):**
   ```bash
-  npm run test:challenge
+  npm run test:watch
+  ```
+* **Gerar relatório de cobertura de código:**
+  ```bash
+  npm run test:coverage
   ```
 
-A suíte de testes automatizados valida o funcionamento do Lexer, Parser, Interpretador e tratamento de erros sintáticos/semânticos.
+#### Cobertura de Código por Módulo
 
-#### 1. Executar os Testes Automatizados
+| Módulo | Arquivo | % Stmts | % Branch | % Funcs | % Lines |
+| :--- | :--- | :---: | :---: | :---: | :---: |
+| **Desafio** | `src/challenge/challenge.ts` | **100%** | **100%** | **100%** | **100%** |
+| **DSL - Interpretador** | `src/dsl/interpreter.ts` | **100%** | **100%** | **100%** | **100%** |
+| **DSL - Analisador Léxico** | `src/dsl/lexer.ts` | **100%** | **100%** | **100%** | **100%** |
+| **DSL - Analisador Sintático** | `src/dsl/parser.ts` | **94.44%** | **78.18%** | **100%** | **94.18%** |
+| **Motor de Áudio** | `src/audio/engine.ts` | **97.33%** | **72.41%** | **92.85%** | **97.22%** |
+| **Estado da Aplicação** | `src/state/appReducer.ts` | **95.65%** | **94.44%** | **100%** | **95.45%** |
+| **Total Geral** | *(todos os arquivos)* | **94.45%** | **81.01%** | **93.22%** | **94.31%** |
 
-Você pode rodar a suíte de testes diretamente via `npm`:
+Para conferir o detalhamento completo dos 84 cenários de teste, bugs documentados e limitações técnicas, consulte o documento [Relatório de Testes Automatizados](docs/RELATORIO_TESTES.md).
 
-```bash
-npm test
-```
-
-Ou utilizando o `tsx` diretamente:
-
-```bash
-npx tsx src/dsl/__tests__/dsl.test.ts
-```
-
-#### 2. Casos de Teste Validados
+#### Casos de Teste Validados da DSL
 
 | Caso de Teste | Entrada DSL | Resultado Esperado | Status |
 | :--- | :--- | :--- | :---: |
@@ -139,7 +145,7 @@ npx tsx src/dsl/__tests__/dsl.test.ts
 | **PLAY sem Instrumento** | `PLAY` | Erro semântico: *"PLAY exige que um instrumento seja selecionado previamente"*. | ✅ Passou |
 | **REPEAT sem END** | `REPEAT 2`<br>`PLAY` | Erro sintático: *"Bloco REPEAT iniciado na linha X não foi encerrado com END"*. | ✅ Passou |
 
-#### 3. Exemplo de Teste Manual em Código
+#### Exemplo de Teste Manual em Código
 
 Para compilar um trecho de código DSL manualmente e inspecionar a saída:
 
