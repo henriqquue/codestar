@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Reset de botões — anula text-decoration que o Tailwind v4 pode injetar */
+button {
+  text-decoration: none;
+}
+
 /* Reset moderno e variáveis globais do CodeStar */
 :root {
   --bg-main: #0a0e1a;

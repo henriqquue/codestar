@@ -6,6 +6,7 @@ import { OFFICIAL_CHALLENGES, getChallengeById } from './challenge/catalog';
 import { compileCode } from './dsl';
 import { AudioEngine } from './audio/engine';
 import { ChallengePanel } from './components/ChallengePanel';
+import { ChallengeSelector } from './components/ChallengeSelector';
 import { CodeEditor } from './components/CodeEditor';
 import { RhythmVisualizer } from './components/RhythmVisualizer';
 import { RunControls } from './components/RunControls';
@@ -105,17 +106,17 @@ export const App: React.FC<AppProps> = ({ challenge = MVP_CHALLENGE }) => {
     handlePlay();
   }, [handlePlay]);
 
-  // Ação de alternar desafio no seletor temporário
-  const handleChallengeChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const selected = getChallengeById(e.target.value);
-      if (selected) {
+  // Ação de alternar desafio
+  const selectChallenge = useCallback(
+    (challengeId: string) => {
+      const selected = getChallengeById(challengeId);
+      if (selected && selected.id !== currentChallenge.id) {
         audioEngineRef.current?.stop();
         setCurrentChallenge(selected);
         dispatch({ type: 'CLEAR_CODE' });
       }
     },
-    []
+    [currentChallenge.id]
   );
 
   // O botão executar só é habilitado em estado 'valid' ou 'completed' com eventos
@@ -125,36 +126,21 @@ export const App: React.FC<AppProps> = ({ challenge = MVP_CHALLENGE }) => {
 
   return (
     <div className="app-container">
-      {/* Cabeçalho superior com título e seletor de desafios */}
+      {/* Cabeçalho superior com título e perfil */}
       <header className="app-header">
         <div className="header-left">
           <div className="app-logo">
+            <span className="app-logo-badge">♪</span>
             <span className="app-logo-text">CODESTAR</span>
           </div>
-        </div>
-
-        <div className="header-center">
-          <div className="challenge-selector-wrapper flex items-center gap-2">
-            <label htmlFor="challenge-select" className="text-xs text-slate-400 font-medium">
-              Desafio:
-            </label>
-            <select
-              id="challenge-select"
-              aria-label="Selecionar desafio"
-              value={currentChallenge.id}
-              onChange={handleChallengeChange}
-              className="challenge-select bg-slate-800 text-slate-100 text-sm px-3 py-1 rounded border border-slate-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-sky-500"
-            >
-              {OFFICIAL_CHALLENGES.map((ch) => (
-                <option key={ch.id} value={ch.id}>
-                  {ch.order}. {ch.title} ({ch.level})
-                </option>
-              ))}
-            </select>
-          </div>
+          <span className="app-tagline">Aprenda lógica de programação com música</span>
         </div>
 
         <div className="header-right">
+          <div className="header-stats-pill">
+            <span className="stats-icon">⚡</span>
+            <span className="stats-text">60 XP em jogo</span>
+          </div>
           <div className="user-avatar" title="Aluno">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -163,6 +149,13 @@ export const App: React.FC<AppProps> = ({ challenge = MVP_CHALLENGE }) => {
           </div>
         </div>
       </header>
+
+      {/* Seletor Gamificado de Desafios (Trilha de Missões Rítmicas) */}
+      <ChallengeSelector
+        challenges={OFFICIAL_CHALLENGES}
+        currentChallenge={currentChallenge}
+        onSelectChallenge={selectChallenge}
+      />
 
       {/* Layout Split Screen (Painel Esquerdo + Painel Direito) */}
       <main className="app-split-layout">
