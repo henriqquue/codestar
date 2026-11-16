@@ -6,6 +6,7 @@ import { OFFICIAL_CHALLENGES, getChallengeById } from './challenge/catalog';
 import { compileCode } from './dsl';
 import { AudioEngine } from './audio/engine';
 import { ChallengePanel } from './components/ChallengePanel';
+import { ChallengeSelector } from './components/ChallengeSelector';
 import { CodeEditor } from './components/CodeEditor';
 import { RhythmVisualizer } from './components/RhythmVisualizer';
 import { RunControls } from './components/RunControls';
@@ -105,7 +106,7 @@ export const App: React.FC<AppProps> = ({ challenge = MVP_CHALLENGE }) => {
     handlePlay();
   }, [handlePlay]);
 
-  // Ação de alternar desafio (utilizada tanto pelo seletor de botões quanto pelo select)
+  // Ação de alternar desafio
   const selectChallenge = useCallback(
     (challengeId: string) => {
       const selected = getChallengeById(challengeId);
@@ -118,13 +119,6 @@ export const App: React.FC<AppProps> = ({ challenge = MVP_CHALLENGE }) => {
     [currentChallenge.id]
   );
 
-  const handleChallengeChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      selectChallenge(e.target.value);
-    },
-    [selectChallenge]
-  );
-
   // O botão executar só é habilitado em estado 'valid' ou 'completed' com eventos
   const canExecute =
     (state.uiState === 'valid' || state.uiState === 'completed') &&
@@ -132,73 +126,21 @@ export const App: React.FC<AppProps> = ({ challenge = MVP_CHALLENGE }) => {
 
   return (
     <div className="app-container">
-      {/* Cabeçalho superior com título e seletor de desafios */}
+      {/* Cabeçalho superior com título e perfil */}
       <header className="app-header">
         <div className="header-left">
           <div className="app-logo">
+            <span className="app-logo-badge">♪</span>
             <span className="app-logo-text">CODESTAR</span>
           </div>
-        </div>
-
-        <div className="header-center">
-          <div className="challenge-selector-wrapper">
-            {/* Seletor Segmentado Gamificado (Desktop e Tablet) */}
-            <nav className="challenge-selector-nav" aria-label="Seletor de Desafios">
-              {OFFICIAL_CHALLENGES.map((ch) => {
-                const isActive = ch.id === currentChallenge.id;
-                return (
-                  <button
-                    key={ch.id}
-                    type="button"
-                    onClick={() => selectChallenge(ch.id)}
-                    className={`challenge-nav-item ${isActive ? `active level-${ch.level}` : ''}`}
-                    aria-current={isActive ? 'page' : undefined}
-                    title={`${ch.title} — ${ch.level}`}
-                  >
-                    <span className={`challenge-nav-badge ${ch.level}`}>
-                      {ch.order.toString().padStart(2, '0')} •{' '}
-                      {ch.level === 'basic'
-                        ? 'BÁSICO'
-                        : ch.level === 'intermediate'
-                        ? 'MÉDIO'
-                        : 'AVANÇADO'}
-                    </span>
-                    <span className="challenge-nav-title">{ch.title}</span>
-                    <span className="challenge-nav-xp">+{ch.xp} XP</span>
-                  </button>
-                );
-              })}
-            </nav>
-
-            {/* Dropdown estilizado para telas menores */}
-            <div className="challenge-select-mobile-container">
-              <label htmlFor="challenge-select" className="sr-only">
-                Selecionar desafio
-              </label>
-              <select
-                id="challenge-select"
-                aria-label="Selecionar desafio"
-                value={currentChallenge.id}
-                onChange={handleChallengeChange}
-                className="challenge-select-styled"
-              >
-                {OFFICIAL_CHALLENGES.map((ch) => (
-                  <option key={ch.id} value={ch.id}>
-                    {ch.order}. {ch.title} —{' '}
-                    {ch.level === 'basic'
-                      ? 'Básico'
-                      : ch.level === 'intermediate'
-                      ? 'Intermediário'
-                      : 'Avançado'}{' '}
-                    (+{ch.xp} XP)
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
+          <span className="app-tagline">Aprenda lógica de programação com música</span>
         </div>
 
         <div className="header-right">
+          <div className="header-stats-pill">
+            <span className="stats-icon">⚡</span>
+            <span className="stats-text">60 XP em jogo</span>
+          </div>
           <div className="user-avatar" title="Aluno">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
               <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
@@ -207,6 +149,13 @@ export const App: React.FC<AppProps> = ({ challenge = MVP_CHALLENGE }) => {
           </div>
         </div>
       </header>
+
+      {/* Seletor Gamificado de Desafios (Trilha de Missões Rítmicas) */}
+      <ChallengeSelector
+        challenges={OFFICIAL_CHALLENGES}
+        currentChallenge={currentChallenge}
+        onSelectChallenge={selectChallenge}
+      />
 
       {/* Layout Split Screen (Painel Esquerdo + Painel Direito) */}
       <main className="app-split-layout">
