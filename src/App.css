@@ -174,22 +174,9 @@
   position: relative;
 }
 
-/* Linha decorativa conectando os cards */
+/* Rail decorativa removida — causava linha fantasma atravessando os cards */
 .challenge-track-rail {
-  position: absolute;
-  top: 50%;
-  left: calc(33.33% / 2);
-  right: calc(33.33% / 2);
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    rgba(16, 185, 129, 0.4),
-    rgba(245, 158, 11, 0.4),
-    rgba(244, 63, 94, 0.4)
-  );
-  transform: translateY(-50%);
-  pointer-events: none;
-  z-index: 0;
+  display: none;
 }
 
 /* Grade de 3 colunas para os cards */
@@ -216,6 +203,11 @@
   position: relative;
   overflow: hidden;
   color: var(--text-muted);
+  /* Reset de estilos padrão do <button> */
+  text-decoration: none;
+  -webkit-appearance: none;
+  appearance: none;
+  font-family: inherit;
 }
 
 /* Faixa de cor lateral indicando dificuldade */
@@ -367,6 +359,7 @@
   font-weight: 700;
   color: inherit;
   line-height: 1.3;
+  text-decoration: none;
 }
 
 .card-concept-hint {
@@ -381,7 +374,8 @@
   align-items: center;
   justify-content: space-between;
   padding-top: 0.5rem;
-  border-top: 1px solid var(--border-color);
+  margin-top: auto;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .card-xp-pill {
