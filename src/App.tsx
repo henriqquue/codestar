@@ -105,17 +105,24 @@ export const App: React.FC<AppProps> = ({ challenge = MVP_CHALLENGE }) => {
     handlePlay();
   }, [handlePlay]);
 
-  // Ação de alternar desafio no seletor temporário
-  const handleChallengeChange = useCallback(
-    (e: React.ChangeEvent<HTMLSelectElement>) => {
-      const selected = getChallengeById(e.target.value);
-      if (selected) {
+  // Ação de alternar desafio (utilizada tanto pelo seletor de botões quanto pelo select)
+  const selectChallenge = useCallback(
+    (challengeId: string) => {
+      const selected = getChallengeById(challengeId);
+      if (selected && selected.id !== currentChallenge.id) {
         audioEngineRef.current?.stop();
         setCurrentChallenge(selected);
         dispatch({ type: 'CLEAR_CODE' });
       }
     },
-    []
+    [currentChallenge.id]
+  );
+
+  const handleChallengeChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      selectChallenge(e.target.value);
+    },
+    [selectChallenge]
   );
 
   // O botão executar só é habilitado em estado 'valid' ou 'completed' com eventos
@@ -134,23 +141,60 @@ export const App: React.FC<AppProps> = ({ challenge = MVP_CHALLENGE }) => {
         </div>
 
         <div className="header-center">
-          <div className="challenge-selector-wrapper flex items-center gap-2">
-            <label htmlFor="challenge-select" className="text-xs text-slate-400 font-medium">
-              Desafio:
-            </label>
-            <select
-              id="challenge-select"
-              aria-label="Selecionar desafio"
-              value={currentChallenge.id}
-              onChange={handleChallengeChange}
-              className="challenge-select bg-slate-800 text-slate-100 text-sm px-3 py-1 rounded border border-slate-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-sky-500"
-            >
-              {OFFICIAL_CHALLENGES.map((ch) => (
-                <option key={ch.id} value={ch.id}>
-                  {ch.order}. {ch.title} ({ch.level})
-                </option>
-              ))}
-            </select>
+          <div className="challenge-selector-wrapper">
+            {/* Seletor Segmentado Gamificado (Desktop e Tablet) */}
+            <nav className="challenge-selector-nav" aria-label="Seletor de Desafios">
+              {OFFICIAL_CHALLENGES.map((ch) => {
+                const isActive = ch.id === currentChallenge.id;
+                return (
+                  <button
+                    key={ch.id}
+                    type="button"
+                    onClick={() => selectChallenge(ch.id)}
+                    className={`challenge-nav-item ${isActive ? `active level-${ch.level}` : ''}`}
+                    aria-current={isActive ? 'page' : undefined}
+                    title={`${ch.title} — ${ch.level}`}
+                  >
+                    <span className={`challenge-nav-badge ${ch.level}`}>
+                      {ch.order.toString().padStart(2, '0')} •{' '}
+                      {ch.level === 'basic'
+                        ? 'BÁSICO'
+                        : ch.level === 'intermediate'
+                        ? 'MÉDIO'
+                        : 'AVANÇADO'}
+                    </span>
+                    <span className="challenge-nav-title">{ch.title}</span>
+                    <span className="challenge-nav-xp">+{ch.xp} XP</span>
+                  </button>
+                );
+              })}
+            </nav>
+
+            {/* Dropdown estilizado para telas menores */}
+            <div className="challenge-select-mobile-container">
+              <label htmlFor="challenge-select" className="sr-only">
+                Selecionar desafio
+              </label>
+              <select
+                id="challenge-select"
+                aria-label="Selecionar desafio"
+                value={currentChallenge.id}
+                onChange={handleChallengeChange}
+                className="challenge-select-styled"
+              >
+                {OFFICIAL_CHALLENGES.map((ch) => (
+                  <option key={ch.id} value={ch.id}>
+                    {ch.order}. {ch.title} —{' '}
+                    {ch.level === 'basic'
+                      ? 'Básico'
+                      : ch.level === 'intermediate'
+                      ? 'Intermediário'
+                      : 'Avançado'}{' '}
+                    (+{ch.xp} XP)
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
         </div>
 
