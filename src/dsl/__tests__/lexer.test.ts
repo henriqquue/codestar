@@ -173,3 +173,4 @@ describe('DSL - Lexer', () => {
     expect(tokens.some((t) => t.type === 'EOF')).toBe(true);
   });
 });
+

@@ -77,3 +77,4 @@ export const OFFICIAL_CHALLENGES: Challenge[] = [
 export function getChallengeById(id: string): Challenge | undefined {
   return OFFICIAL_CHALLENGES.find((c) => c.id === id);
 }
+

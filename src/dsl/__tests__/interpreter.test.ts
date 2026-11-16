@@ -144,3 +144,4 @@ END
     expect(result.errors[0].message).toContain('Limite de passos executáveis (1000) excedido');
   });
 });
+

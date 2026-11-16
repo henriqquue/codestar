@@ -181,3 +181,4 @@ export function installMockAudioContext(): void {
   resetMockAudio();
   (window as unknown as { AudioContext: typeof MockAudioContext }).AudioContext = MockAudioContext;
 }
+

@@ -320,3 +320,4 @@ describe('Estado da Aplicação - appReducer', () => {
     }
   });
 });
+

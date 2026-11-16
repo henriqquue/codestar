@@ -100,3 +100,4 @@ describe('Componente App - Fluxo de Interface e Estados', () => {
     expect(stateBadge).toHaveTextContent('valid');
   });
 });
+
