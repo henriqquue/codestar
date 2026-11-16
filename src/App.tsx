@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useReducer, useEffect, useRef, useCallback } from 'react';
-import { MVP_CHALLENGE, checkChallenge, ChallengeCheckResult } from './challenge/challenge';
-import { compileCode, CompilationResult } from './dsl';
+import React, { useReducer, useEffect, useRef, useCallback, useState } from 'react';
+import { MVP_CHALLENGE, Challenge, checkChallenge } from './challenge/challenge';
+import { OFFICIAL_CHALLENGES, getChallengeById } from './challenge/catalog';
+import { compileCode } from './dsl';
 import { AudioEngine } from './audio/engine';
 import { ChallengePanel } from './components/ChallengePanel';
 import { CodeEditor } from './components/CodeEditor';
@@ -15,9 +16,21 @@ import './App.css';
 // Exporta o tipo UiState conforme solicitado nos requisitos
 export type { UiState };
 
-export const App: React.FC = () => {
+export interface AppProps {
+  challenge?: Challenge;
+}
+
+export const App: React.FC<AppProps> = ({ challenge = MVP_CHALLENGE }) => {
+  const [currentChallenge, setCurrentChallenge] = useState<Challenge>(challenge);
   const [state, dispatch] = useReducer(appReducer, initialState);
   const audioEngineRef = useRef<AudioEngine | null>(null);
+
+  // Sincroniza se a prop challenge inicial for alterada externamente
+  useEffect(() => {
+    setCurrentChallenge(challenge);
+    audioEngineRef.current?.stop();
+    dispatch({ type: 'CLEAR_CODE' });
+  }, [challenge]);
 
   // Instancia o motor de áudio uma única vez e garante limpeza no desmonte
   useEffect(() => {
@@ -62,7 +75,10 @@ export const App: React.FC = () => {
           dispatch({ type: 'STEP_CHANGED', payload: stepIndex });
         },
         onEnd: () => {
-          const checkRes = checkChallenge(events, MVP_CHALLENGE);
+          const checkRes = checkChallenge(events, currentChallenge, {
+            source: state.code,
+            ast: state.compilation?.ast ?? null,
+          });
           dispatch({ type: 'FINISH_PLAYING', payload: checkRes });
         },
       });
@@ -70,7 +86,7 @@ export const App: React.FC = () => {
       console.error('Erro ao reproduzir áudio:', err);
       dispatch({ type: 'STOP_PLAYING' });
     }
-  }, [state.uiState, state.compilation]);
+  }, [state.uiState, state.compilation, state.code, currentChallenge]);
 
   // Ação de Parar a reprodução imediatamente
   const handleStop = useCallback(() => {
@@ -89,6 +105,19 @@ export const App: React.FC = () => {
     handlePlay();
   }, [handlePlay]);
 
+  // Ação de alternar desafio no seletor temporário
+  const handleChallengeChange = useCallback(
+    (e: React.ChangeEvent<HTMLSelectElement>) => {
+      const selected = getChallengeById(e.target.value);
+      if (selected) {
+        audioEngineRef.current?.stop();
+        setCurrentChallenge(selected);
+        dispatch({ type: 'CLEAR_CODE' });
+      }
+    },
+    []
+  );
+
   // O botão executar só é habilitado em estado 'valid' ou 'completed' com eventos
   const canExecute =
     (state.uiState === 'valid' || state.uiState === 'completed') &&
@@ -96,7 +125,7 @@ export const App: React.FC = () => {
 
   return (
     <div className="app-container">
-      {/* Cabeçalho superior com título e metadados */}
+      {/* Cabeçalho superior com título e seletor de desafios */}
       <header className="app-header">
         <div className="header-left">
           <div className="app-logo">
@@ -105,9 +134,24 @@ export const App: React.FC = () => {
         </div>
 
         <div className="header-center">
-          <span className="header-challenge-name">
-            Desafio 01 — {MVP_CHALLENGE.title}
-          </span>
+          <div className="challenge-selector-wrapper flex items-center gap-2">
+            <label htmlFor="challenge-select" className="text-xs text-slate-400 font-medium">
+              Desafio:
+            </label>
+            <select
+              id="challenge-select"
+              aria-label="Selecionar desafio"
+              value={currentChallenge.id}
+              onChange={handleChallengeChange}
+              className="challenge-select bg-slate-800 text-slate-100 text-sm px-3 py-1 rounded border border-slate-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-sky-500"
+            >
+              {OFFICIAL_CHALLENGES.map((ch) => (
+                <option key={ch.id} value={ch.id}>
+                  {ch.order}. {ch.title} ({ch.level})
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
         <div className="header-right">
@@ -124,7 +168,7 @@ export const App: React.FC = () => {
       <main className="app-split-layout">
         {/* Painel Esquerdo: ChallengePanel + CodeEditor */}
         <section className="panel-column panel-left" aria-label="Painel de desafios e editor de código">
-          <ChallengePanel challenge={MVP_CHALLENGE} />
+          <ChallengePanel challenge={currentChallenge} />
           <CodeEditor
             value={state.code}
             onChange={(newCode) => dispatch({ type: 'TYPE_CODE', payload: newCode })}

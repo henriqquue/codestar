@@ -2,7 +2,7 @@
 
 **Projeto:** CodeStar (Trabalho de Conclusão de Curso em Engenharia de Software)  
 **Ambiente:** Next.js 16 (App Router), React 19, TypeScript, Jest & Testing Library  
-**Data:** 03 de Novembro de 2026  
+**Data:** 16 de Novembro de 2026  
 
 ---
 
@@ -73,18 +73,37 @@ npm run test:coverage
 | **DSL - Integração** | Sequência com 3 instrumentos | `kick`, `snare` e `hihat` | 3 passos com timbres corretos | Passou |
 | **DSL - Integração** | Erro léxico isola interpretador | `@\nINSTRUMENT kick\nPLAY` | AST nula, events vazio | Passou |
 | **DSL - Casos Iniciais** | Casos originais do dsl.test.ts | 5 casos de compilação iniciais | Validados com asserções expect formais | Passou |
-| **DSL - Bugs** | REPEAT sem passos sonoros | `REPEAT 50000000\nINSTRUMENT kick\nEND` | Deveria finalizar em < 200ms | Falha esperada (`it.failing`) |
-| **DSL - Bugs** | PLAY sem instrumento em loop | `REPEAT 20000\nPLAY\nEND` | Deveria gerar no máximo 1 erro | Falha esperada (`it.failing`) |
-| **Desafio** | Solução de referência | `kick -> PLAY -> WAIT -> PLAY` | `success: true` | Passou |
-| **Desafio** | Batidas seguidas sem WAIT | `kick -> PLAY -> PLAY` | `success: true` | Passou |
-| **Desafio** | Nenhuma batida (só WAIT) | `WAIT\nWAIT` | Reprovação com mensagem orientadora | Passou |
-| **Desafio** | Apenas uma batida | `kick -> PLAY` | Reprovação: exige exatamente duas | Passou |
-| **Desafio** | Três batidas | `kick -> PLAY x3` | Reprovação informando contagem (3) | Passou |
-| **Desafio** | Instrumento errado | `snare -> PLAY x2` | Reprovação indicando apenas 'kick' | Passou |
-| **Desafio** | Instrumentos misturados | `kick` e `snare` | Reprovação por instrumento indevido | Passou |
-| **Desafio** | Batidas no mesmo stepIndex | Eventos manuais sobrepostos | Reprovação: posições distintas | Passou |
-| **Desafio** | Objeto de desafio inválido | Desafio nulo ou sem ID | Lança Error | Passou |
-| **Desafio** | Gabarito oficial de MVP_CHALLENGE | `MVP_CHALLENGE.referenceSolution` | Aprovado no validador | Passou |
+| **DSL - Bugs Corrigidos** | REPEAT sem passos sonoros | `REPEAT 50000000\nINSTRUMENT kick\nEND` | Finaliza em < 200ms com erro na linha do REPEAT | Passou |
+| **DSL - Bugs Corrigidos** | PLAY sem instrumento em loop | `REPEAT 20000\nPLAY\nEND` | Gera exatamente 1 erro semântico | Passou |
+| **Desafio Básico** | Solução de referência | `kick -> PLAY -> WAIT -> PLAY` | `success: true` | Passou |
+| **Desafio Básico** | Batidas seguidas sem WAIT | `kick -> PLAY -> PLAY` | `success: true` | Passou |
+| **Desafio Básico** | Nenhuma batida (só WAIT) | `WAIT\nWAIT` | Reprovação com mensagem orientadora | Passou |
+| **Desafio Básico** | Apenas uma batida | `kick -> PLAY` | Reprovação: exige exatamente duas | Passou |
+| **Desafio Básico** | Três batidas | `kick -> PLAY x3` | Reprovação informando contagem (3) | Passou |
+| **Desafio Básico** | Instrumento errado | `snare -> PLAY x2` | Reprovação indicando apenas 'kick' | Passou |
+| **Desafio Básico** | Instrumentos misturados | `kick` e `snare` | Reprovação por instrumento indevido | Passou |
+| **Desafio Básico** | Batidas no mesmo stepIndex | Eventos manuais sobrepostos | Reprovação: posições distintas | Passou |
+| **Desafio Básico** | Objeto de desafio inválido | Desafio nulo ou sem ID | Lança Error | Passou |
+| **Desafio Básico** | Gabarito oficial de MVP_CHALLENGE | `MVP_CHALLENGE.referenceSolution` | Aprovado no validador | Passou |
+| **Desafio Genérico** | Spec tipo count com count!=2 | Menos e mais batidas que o exigido | Mensagens informando quantidade e instrumento | Passou |
+| **Desafio Intermediário** | Solução de referência com REPEAT | `CHALLENGE_INTERMEDIATE.referenceSolution` | Aprovado de ponta a ponta | Passou |
+| **Desafio Intermediário** | Instrumento divergente | Hi-hat no lugar de snare no passo 3 | Mensagem: esperado snare, mas foi tocado hihat | Passou |
+| **Desafio Intermediário** | Batida no lugar de pausa | Snare no lugar de pausa no passo 2 | Mensagem: esperada pausa, mas foi tocado snare | Passou |
+| **Desafio Intermediário** | Pausa no lugar de batida | Pausa no lugar de kick no passo 1 | Mensagem: esperado kick, mas houve pausa | Passou |
+| **Desafio Intermediário** | Ritmo curto | Apenas 1 repetição | Mensagem indicando passos obtidos vs esperados | Passou |
+| **Desafio Intermediário** | Ritmo longo | 3 repetições em vez de 2 | Mensagem indicando passos excedentes | Passou |
+| **Desafio Intermediário** | Versão desenrolada sem REPEAT | 12 linhas sem REPEAT | Reprovação: exige o uso de REPEAT | Passou |
+| **Desafio Intermediário** | Excesso de linhas de código | Código com mais de 10 linhas | Reprovação com contagem de linhas e teto | Passou |
+| **Desafio Intermediário** | Pausas finais excedentes | WAITs adicionais no final | Aprovado (pausas finais ignoradas) | Passou |
+| **Desafio Intermediário** | Erro de sintaxe | REPEAT sem END | Reprovação informando ausência de batidas | Passou |
+| **Desafio Avançado** | Solução de referência com 3 timbres | `CHALLENGE_ADVANCED.referenceSolution` | Aprovado de ponta a ponta | Passou |
+| **Desafio Avançado** | Caixa com timbre incorreto | Kick no lugar de snare no passo 4 | Mensagem informando divergência no passo 4 | Passou |
+| **Desafio Avançado** | Versão desenrolada sem REPEAT | Código sem REPEAT (> 14 linhas) | Reprovação: exige o uso de REPEAT | Passou |
+| **Desafio - Utilitários** | Conversão patternToEvents | Lista de passos com pausas | Converte em RhythmEvent[] sequenciais | Passou |
+| **Desafio - Utilitários** | Formatação patternToLabel | Lista de passos rítmicos | Gera legenda textual com K, S, H e – | Passou |
+| **Desafio - Utilitários** | Legenda para lista vazia | Array vazio | Retorna string vazia | Passou |
+| **Desafio - Utilitários** | Contexto omitido em desafio com regras | checkChallenge sem context | Falha técnica clara sem lançar exceção | Passou |
+| **Desafio - Catálogo** | Catálogo oficial de desafios | OFFICIAL_CHALLENGES e getChallengeById | Retorna desafios ordenados por order (1, 2, 3) | Passou |
 | **Estado (Reducer)** | Estado inicial | initialState | `initial`, code vazio, compilação nula | Passou |
 | **Estado (Reducer)** | Digitação de código | TYPE_CODE com texto | `editing` | Passou |
 | **Estado (Reducer)** | Código apagado | TYPE_CODE com espaços | Retorna a `initial` e reseta dados | Passou |
@@ -128,20 +147,20 @@ Resultado oficial obtido através do comando `npm run test:coverage`:
 -----------------------|---------|----------|---------|---------|-------------------
 File                   | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s 
 -----------------------|---------|----------|---------|---------|-------------------
-All files              |   94.45 |    81.01 |   93.22 |   94.31 |                   
+All files              |   94.48 |       82 |   92.85 |   94.47 |                   
  audio                 |   97.33 |    72.41 |   92.85 |   97.22 |                   
   engine.ts            |   97.33 |    72.41 |   92.85 |   97.22 | 234-238           
- challenge             |     100 |      100 |     100 |     100 |                   
-  challenge.ts         |     100 |      100 |     100 |     100 |                   
- components            |   83.54 |    67.21 |   85.71 |   82.08 |                   
-  ChallengePanel.tsx   |     100 |      100 |     100 |     100 |                   
+ challenge             |   96.03 |     92.1 |     100 |   96.62 |                   
+  challenge.ts         |   96.03 |     92.1 |     100 |   96.62 | 82,90,101         
+ components            |   84.14 |    67.64 |   85.71 |   82.85 |                   
+  ChallengePanel.tsx   |     100 |    71.42 |     100 |     100 | 28-43             
   CodeEditor.tsx       |   56.66 |    43.75 |    62.5 |   53.84 | 35-36,42-54       
   FeedbackPanel.tsx    |     100 |    73.68 |     100 |     100 | 24,68-89          
   RhythmVisualizer.tsx |     100 |    81.81 |     100 |     100 | 70,84-95          
   RunControls.tsx      |     100 |       50 |     100 |     100 | 34-46             
- dsl                   |   95.89 |    87.23 |     100 |   95.76 |                   
+ dsl                   |   95.63 |    84.69 |   95.23 |    95.5 |                   
   index.ts             |   82.35 |      100 |     100 |   82.35 | 7-9               
-  interpreter.ts       |     100 |      100 |     100 |     100 |                   
+  interpreter.ts       |   97.72 |    81.25 |      75 |   97.67 | 37                
   lexer.ts             |     100 |      100 |     100 |     100 |                   
   parser.ts            |   94.44 |    78.18 |     100 |   94.18 | 162,224-234       
  state                 |   95.65 |    94.44 |     100 |   95.45 |                   
@@ -149,43 +168,23 @@ All files              |   94.45 |    81.01 |   93.22 |   94.31 |
 -----------------------|---------|----------|---------|---------|-------------------
 ```
 
-> **Destaque:** As camadas centrais da aplicação (**`src/challenge` com 100%** e **`src/dsl` com 95.89%**) ultrapassaram amplamente a meta de qualidade de 90%.
+> **Destaque:** As camadas centrais da aplicação (**`src/challenge` com 96.03%** e **`src/dsl` com 95.63%**) mantêm-se consistentemente acima do teto de qualidade de 90%.
 
 ---
 
-## 4. Falhas Encontradas (Bugs Conhecidos Documentados)
+## 4. Correção dos Bugs Históricos
 
-Seguindo as diretrizes do projeto, os bugs identificados **não foram corrigidos no código de produção**, mas foram rigorosamente isolados e documentados em `src/dsl/__tests__/bugs.test.ts` utilizando a diretiva `it.failing` do Jest.
+Os bugs identificados na fase inicial foram devidamente corrigidos no interpretador (`src/dsl/interpreter.ts`) e seus testes em `src/dsl/__tests__/bugs.test.ts` agora passam normalmente:
 
 ### Bug A: Congelamento por Repetição Gigante sem Passos Sonoros
-* **O que acontecia:** O interpretador entra em um laço de repetição síncrono avaliando o corpo `count` vezes. A trava de segurança de 1000 passos (`MAX_EXECUTION_STEPS`) baseia-se apenas no contador `this.stepIndex`, que só é incrementado por instruções sonoras (`PLAY` e `WAIT`). Quando o bloco contém apenas atribuições (ex: `INSTRUMENT kick`) ou está vazio, `this.stepIndex` nunca atinge 1000.
-* **Entrada de Exemplo:**
-  ```dsl
-  REPEAT 50000000
-    INSTRUMENT kick
-  END
-  ```
-* **Impacto para o Aluno:** Se um aluno acidentalmente digitar um número muito alto (ex: `REPEAT 1000000000`), a aba do navegador congela completamente por esgotamento da thread principal (Event Loop), forçando o encerramento do navegador e perda do progresso.
-* **Correção Sugerida:**
-  1. Adicionar uma verificação do valor de `count` no Parser ou Interpreter, impondo um teto máximo de repetições (ex: `MAX_REPEAT_COUNT = 100`).
-  2. Implementar um contador global de iterações/instruções avaliadas, independente de serem geradoras de som.
+* **O que acontecia:** O interpretador entrava em um laço de repetição síncrono avaliando o corpo `count` vezes. Como o limite de segurança (`MAX_EXECUTION_STEPS = 1000`) só incrementava com `PLAY` e `WAIT`, laços vazios ou com atribuições puras travavam o navegador.
+* **Entrada de Exemplo:** `REPEAT 50000000\n  INSTRUMENT kick\nEND`
+* **Correção Implementada:** Foi introduzido o limitador `MAX_OPERATIONS = 10000` que contabiliza cada iteração de blocos `REPEAT`. Caso o teto seja atingido, a execução é abortada imediatamente com a mensagem `"Limite de operações executáveis (10000) excedido. Reduza a quantidade de repetições."` associada à linha do comando `REPEAT`.
 
 ### Bug B: Explosão de Erros Semânticos em Cascata dentro de Loops
-* **O que acontecia:** Quando o comando `PLAY` é chamado sem que um instrumento tenha sido selecionado previamente dentro de um loop `REPEAT`, o interpretador adiciona um erro à lista `this.errors`. Contudo, o critério de parada prematura é:
-  ```typescript
-  if (this.errors.length > 0 && this.stepIndex >= MAX_EXECUTION_STEPS) { break; }
-  ```
-  Como o erro não avança o `stepIndex`, o loop continua executando até a última iteração.
-* **Entrada de Exemplo:**
-  ```dsl
-  REPEAT 20000
-    PLAY
-  END
-  ```
-* **Impacto para o Aluno:** Em vez de receber uma mensagem educativa indicando que faltou o comando `INSTRUMENT`, o painel de erros da interface recebe 20.000 mensagens de erro idênticas, travando a renderização da interface e poluindo a visualização.
-* **Correção Sugerida:**
-  1. Interromper o bloco `REPEAT` imediatamente se houver erro fatal na primeira iteração (`if (this.errors.length > 0) break;`).
-  2. Desduplicar erros semânticos idênticos por linha de código antes de repassá-los ao relatório de compilação.
+* **O que acontecia:** Quando o comando `PLAY` era chamado sem instrumento selecionado dentro de um `REPEAT`, a condição anterior só interrompia o loop se houvesse avanço de `stepIndex >= MAX_EXECUTION_STEPS`. Como o erro impedia o incremento do passo, o laço executava milhares de vezes gerando erros duplicados.
+* **Entrada de Exemplo:** `REPEAT 20000\n  PLAY\nEND`
+* **Correção Implementada:** O interpretador agora interrompe a repetição imediatamente ao detectar um erro no corpo do loop (`if (this.errors.length > 0) break;`) e deduplica mensagens idênticas na mesma linha de código via `addError()`, retornando exatamente 1 erro semântico.
 
 ---
 
