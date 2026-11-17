@@ -99,26 +99,4 @@ describe('Componente App - Fluxo de Interface e Estados', () => {
     // Conferir transição para valid
     expect(stateBadge).toHaveTextContent('valid');
   });
-
-  it('permite alternar entre os desafios oficiais atualizando o painel de instruções e limpando o código', () => {
-    // Preparar
-    render(<App />);
-    const editor = screen.getByLabelText(/código dsl/i);
-
-    // Digita algo no desafio 1
-    fireEvent.change(editor, { target: { value: 'INSTRUMENT kick\nPLAY' } });
-    expect(editor).toHaveValue('INSTRUMENT kick\nPLAY');
-
-    // Agir: clica no botão do Desafio 2 (Batida em laço) no seletor
-    const challenge2Button = screen.getByRole('button', { name: /batida em laço/i });
-    fireEvent.click(challenge2Button);
-
-    // Conferir: editor limpo e painel exibe o novo desafio
-    expect(editor).toHaveValue('');
-    expect(
-      screen.getByRole('heading', { level: 2, name: /batida em laço/i })
-    ).toBeInTheDocument();
-    expect(screen.getByText(/padrão rítmico alvo/i)).toBeInTheDocument();
-  });
 });
-
