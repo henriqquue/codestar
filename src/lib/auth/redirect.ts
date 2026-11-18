@@ -21,7 +21,7 @@ export interface ResolveRedirectOptions {
  * 1. Raiz ("/"):
  *    - sem sessão -> "/login"
  *    - com sessão e sem perfil -> "/onboarding"
- *    - com sessão e com perfil -> "/trilha"
+ *    - com sessão e com perfil -> "/dashboard"
  * 2. Sem sessão:
  *    - apenas "/login" e subrotas de "/auth" (ex: "/auth/callback") são públicas (retorna null)
  *    - qualquer outra rota redireciona para "/login"
@@ -29,10 +29,10 @@ export interface ResolveRedirectOptions {
  *    - "/onboarding" e "/auth/*" são acessíveis (retorna null)
  *    - qualquer outra rota redireciona para "/onboarding"
  * 4. Com sessão e com perfil:
- *    - "/login" e "/onboarding" redirecionam para "/trilha"
+ *    - "/login" e "/onboarding" redirecionam para "/dashboard"
  *    - rotas sob "/professor/*":
  *      - se role === 'teacher' -> permitido (retorna null)
- *      - se não for 'teacher' -> redireciona para "/trilha"
+ *      - se não for 'teacher' -> redireciona para "/dashboard"
  *    - demais rotas -> permitidas (retorna null)
  */
 export function resolveRedirect({
@@ -45,7 +45,7 @@ export function resolveRedirect({
   if (pathname === '/') {
     if (!hasSession) return '/login';
     if (!hasProfile) return '/onboarding';
-    return '/trilha';
+    return '/dashboard';
   }
 
   // Rotas de autenticação abertas
@@ -69,7 +69,7 @@ export function resolveRedirect({
 
   // Caso 3: Usuário autenticado e com perfil completo
   if (pathname === '/login' || pathname === '/onboarding') {
-    return '/trilha';
+    return '/dashboard';
   }
 
   // Proteção de rotas restritas para professores (/professor/*)
@@ -77,7 +77,7 @@ export function resolveRedirect({
     if (role === 'teacher') {
       return null;
     }
-    return '/trilha';
+    return '/dashboard';
   }
 
   return null;

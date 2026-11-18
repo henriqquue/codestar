@@ -86,12 +86,8 @@ export default function OnboardingPage() {
         }
       }
 
-      // 3. Redirecionamento baseado no papel
-      if (selectedRole === 'teacher') {
-        router.push('/dashboard');
-      } else {
-        router.push('/trilha');
-      }
+      // 3. Redirecionamento baseado no papel (ambos vão para /dashboard na Fase 4)
+      router.push('/dashboard');
       router.refresh();
     } catch {
       setErrorMessage('Ocorreu um erro ao concluir o cadastro.');

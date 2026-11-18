@@ -10,8 +10,8 @@ describe('resolveRedirect', () => {
       expect(resolveRedirect({ hasSession: true, hasProfile: false, pathname: '/' })).toBe('/onboarding');
     });
 
-    it('redireciona para /trilha quando há sessão e perfil', () => {
-      expect(resolveRedirect({ hasSession: true, hasProfile: true, role: 'student', pathname: '/' })).toBe('/trilha');
+    it('redireciona para /dashboard quando há sessão e perfil', () => {
+      expect(resolveRedirect({ hasSession: true, hasProfile: true, role: 'student', pathname: '/' })).toBe('/dashboard');
     });
   });
 
@@ -50,9 +50,9 @@ describe('resolveRedirect', () => {
   });
 
   describe('Com sessão ativa e perfil completo', () => {
-    it('redireciona /login e /onboarding de volta para /trilha', () => {
-      expect(resolveRedirect({ hasSession: true, hasProfile: true, role: 'student', pathname: '/login' })).toBe('/trilha');
-      expect(resolveRedirect({ hasSession: true, hasProfile: true, role: 'student', pathname: '/onboarding' })).toBe('/trilha');
+    it('redireciona /login e /onboarding de volta para /dashboard', () => {
+      expect(resolveRedirect({ hasSession: true, hasProfile: true, role: 'student', pathname: '/login' })).toBe('/dashboard');
+      expect(resolveRedirect({ hasSession: true, hasProfile: true, role: 'student', pathname: '/onboarding' })).toBe('/dashboard');
     });
 
     it('permite acesso a rotas comuns da plataforma para estudante e professor', () => {
@@ -65,9 +65,9 @@ describe('resolveRedirect', () => {
       expect(resolveRedirect({ hasSession: true, hasProfile: true, role: 'teacher', pathname: '/professor/desafios' })).toBeNull();
     });
 
-    it('redireciona aluno tentando acessar rota /professor/* para /trilha', () => {
-      expect(resolveRedirect({ hasSession: true, hasProfile: true, role: 'student', pathname: '/professor/desafios' })).toBe('/trilha');
-      expect(resolveRedirect({ hasSession: true, hasProfile: true, role: null, pathname: '/professor/desafios' })).toBe('/trilha');
+    it('redireciona aluno tentando acessar rota /professor/* para /dashboard', () => {
+      expect(resolveRedirect({ hasSession: true, hasProfile: true, role: 'student', pathname: '/professor/desafios' })).toBe('/dashboard');
+      expect(resolveRedirect({ hasSession: true, hasProfile: true, role: null, pathname: '/professor/desafios' })).toBe('/dashboard');
     });
   });
 });
