@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import '@/src/App.css';
 
 export const metadata: Metadata = {
   title: 'CodeStar — Programação Rítmica',
